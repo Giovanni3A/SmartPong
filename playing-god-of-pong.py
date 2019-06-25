@@ -28,7 +28,6 @@ def init_n_players_1_layer(n):
 
     file.close()
 
-init_n_players_1_layer(n)
 
 def move_player(player,v,min_lim,max_lim):
     y = player[1] + v
@@ -307,6 +306,8 @@ def evolve(n_fittests,n_sons):
                 file.write("\n")
     file.close()
     print("Reproducing of {} new players complete. {} mutations happened!".format(n_sons,nmutat))
+
+init_n_players_1_layer(n)
 
 for generation in range(n_gen-1):
     train()
