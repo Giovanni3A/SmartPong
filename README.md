@@ -8,6 +8,8 @@ Using genetic algorithm and neural networks to develop a smart pong artificial p
      Receives 3 numerical arguments: population size, how many of the best players 'survive' and number of generations to run. It starts with a random population, probably lots of dumb guys, and pass the best 'genes' to next generations neural networks.
  - you-against-champ.py - 
      Receive a parameter of PATH to champion .dat file, so you can play against this evolution generated player.
+ - pong-battle.py - 
+     Receive paths to 2 champions .dat files and iiiiit's tiiiiime.
 
 *Players description*:
   - Abraham - 
