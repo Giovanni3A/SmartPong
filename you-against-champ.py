@@ -24,27 +24,33 @@ def pong(layer1):
 
     pygame.init()
 
-    win_width = 600
-    win_height = 500
-    window = pygame.display.set_mode((win_width,win_height))
-    pygame.display.set_caption("Hi!")
+    win_width = 400
+    win_height = 400
 
     p_width = 20
     p_height = 90
 
-    p1 = [10,210]
-    p2 = [win_width-30,210]
+    ball_radius = 5
+    ball_v_limit = 3
+
+    limit_pv = 3
+    limit_p2_up = 3
+    limit_p2_down = 2
+    window = pygame.display.set_mode((win_width,win_height))
+    pygame.display.set_caption("Hi!")
+
+    p1 = [p_width/2,win_height/2-p_height/2]
+    p2 = [win_width-3*p_width/2,win_height/2-p_height/2]
     p1_v = 0
     p2_v = 0
 
-    ball = [250,250]
-    ball_radius = 5
+    ball = [int(win_width/4),int(win_height/2)]
 
-    ball_vx = -1 
+    ball_vx = 1 
     #ball_vy = ball_init_dir
     ball_vy = random.sample([-1,0,1],1)[0]
-    ball_v_limit = 3
 
+    ball_v_limit = 3
     limit_pv = 3
     limit_p2_up = 3
     limit_p2_down = 2

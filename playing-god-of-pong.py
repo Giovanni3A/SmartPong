@@ -51,34 +51,36 @@ def neural_move(input,layer1):
     decision = np.where(np.array(output)==max(output))[0][0]
     return decision
 
-def pong(layer1):
+def pong(layer1,show_game=False):
 
-    pygame.init()
-
-    win_width = 600
-    win_height = 500
-    window = pygame.display.set_mode((win_width,win_height))
-    pygame.display.set_caption("Hi!")
+    win_width = 400
+    win_height = 400
 
     p_width = 20
     p_height = 90
 
-    p1 = [10,210]
-    p2 = [win_width-30,210]
-    p1_v = 0
-    p2_v = 0
-
-    ball = [250,250]
     ball_radius = 5
-
-    ball_vx = -1 
-    #ball_vy = ball_init_dir
-    ball_vy = random.sample([-1,0,1],1)[0]
     ball_v_limit = 3
 
     limit_pv = 3
     limit_p2_up = 3
     limit_p2_down = 2
+
+    if show_game:
+        pygame.init()
+        window = pygame.display.set_mode((win_width,win_height))
+        pygame.display.set_caption("Hi!")
+
+    p1 = [p_width/2,win_height/2-p_height/2]
+    p2 = [win_width-3*p_width/2,win_height/2-p_height/2]
+    p1_v = 0
+    p2_v = 0
+
+    ball = [int(win_width/4),int(win_height/2)]
+
+    ball_vx = 1 
+    #ball_vy = ball_init_dir
+    ball_vy = random.sample([-1,0,1],1)[0]
 
     n_balls_touch = 0
     n_walks = 0
@@ -97,12 +99,6 @@ def pong(layer1):
 
         move = neural_move(input,layer1)        
 
-        #keys = pygame.key.get_pressed()
-        
-        #if keys[pygame.K_w]:
-        #    p1_v = -limit_pv
-        #if keys[pygame.K_s]:
-        #    p1_v = limit_pv
         if move == 1:
             p1_v = -limit_pv
         elif move == 2:
@@ -162,13 +158,6 @@ def pong(layer1):
         if ball[1] >= win_height or ball[1] <= 0:
             ball_vy = -ball_vy
 
-        window.fill((0,0,0))
-        pygame.draw.circle(window,(255,0,0),ball,ball_radius)
-        pygame.draw.rect(window,(200,64,32),(p1[0],p1[1],p_width,p_height))
-        pygame.draw.rect(window,(21,62,86),(p2[0],p2[1],p_width,p_height))
-        pygame.display.update()
-        pygame.time.delay(1)
-
         # Punir jogos longos parados
         if n_balls_touch >= 3:
             if zero_v_plays == n_balls_touch:
@@ -177,15 +166,27 @@ def pong(layer1):
                 p1[1] = win_height*2
 
         # Impedir jogos inifinitos
-        if n_balls_touch >= 20:
+        if n_balls_touch >= 50:
             run = False
             winner = True
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+
+        if show_game:
+            window.fill((0,0,0))
+            pygame.draw.circle(window,(255,0,0),ball,ball_radius)
+            pygame.draw.rect(window,(200,64,32),(p1[0],p1[1],p_width,p_height))
+            pygame.draw.rect(window,(21,62,86),(p2[0],p2[1],p_width,p_height))
+            pygame.display.update()
+            pygame.time.delay(1)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return []
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_q]:
+                run = False
                 return []
 
-    # Punir Maradonas
+    # Punir os doido atrás de bola
     if winner:
         score = np.exp(-n_walks/1000)
     else:
@@ -195,7 +196,9 @@ def pong(layer1):
     winn = 1 if winner else 0
     i_distance_to_ball = 0 if winner else (win_height - abs((p1[1]+p_height/2)-ball[1]))
     
-    pygame.quit()
+    if show_game:
+        pygame.quit()
+
     return [winn, score, i_distance_to_ball]
 
 def generate_son(dad,mom):
@@ -209,13 +212,13 @@ def generate_son(dad,mom):
         else:
             son_gen = dad_gen if random.random() >= 0.5 else mom_gen
             if random.random() <= 0.1:
-                d = (son_gen+mom_gen)/2 + 2*(random.random()-1)
+                d = 2*(random.random()-1)
                 nmutations += 1
                 son_gen += d
             son[i] = round(son_gen,2)
     return son, nmutations
 
-def train(n_best=0):
+def train(n_best=0,show_game=False):
     if n_best == 0:
         input_file = "population.dat"
     else:
@@ -246,12 +249,12 @@ def train(n_best=0):
         layer1[1,:] = list1[7:14]
         layer1[2,:] = list1[14:21]
 
-        r = pong(layer1)
+        r = pong(layer1,show_game)
         if len(r) > 0:
             round_results.append([r[0],r[1],r[2],p])
         else:
             print("Interrupt warning! The pong game was interrupted.")
-            break
+            return "broke"
 
         print("Player {}/{}...Result: {}".format(ip+1,n_best,r))
 
@@ -309,10 +312,17 @@ def evolve(n_fittests,n_sons):
 
 init_n_players_1_layer(n)
 
+broke_run = False
 for generation in range(n_gen-1):
-    train()
-    evolve(n_fittests,n_sons)
+    rnd = train()
+    if not(rnd == "broke"):
+        evolve(n_fittests,n_sons)
+    else:
+        broke_run = True
+        break
 
-train()
-evolve(n_fittests,n_sons)
-train(1)
+if not broke_run:
+    last_round = train()
+    if not(last_round == "broke"):
+        evolve(n_fittests,n_sons)
+        train(1,show_game=True)
