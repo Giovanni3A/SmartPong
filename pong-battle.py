@@ -169,6 +169,10 @@ print("***********************************************************")
 print("It's shoowwww time!")
 print("***********************************************************")
 
-r = pong(layer1,layer2)
+victories = [0,0]
 
-print("And the champion is {}!!!".format([name1,name2][r-1]))
+for i in range(10):
+    victories[pong(layer1,layer2)-1] += 1
+winner = [name1,name2][victories.index(max(victories))]
+
+print("And the champion is {}!!!".format(winner))
