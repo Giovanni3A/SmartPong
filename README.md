@@ -20,6 +20,8 @@ Using genetic algorithm and neural networks to develop a smart pong artificial p
       This is the first that satisfied me when i played against him. He seems to follow the ball in a very smart way to walk no much more than necessary and is very precise.
   - Dio - 
       Now we're talking! After having the most obvious idea of not showing the game in screen during the learning rounds, we were able to run populations of hundreds, for some big time number of generations. Dio is the result of that. One more diference, he is trained to play in a game where the ball first goes to his opponent, unlike the other players. Did this to avoid the (lots of) cases where the best players were the ones that learned to play when the ball starts going only in a specific direction.
+  - Edward -
+      Born to battle Dio. Increased the number os generations, but with smaller population size. Interesting results and nice battle.
       
 *Some explanations*:
   The main plan here was to simulate evolutionary learning in a interactive and visual way. Each player defines each frame move from a 1 layer neural network. The inputs to this network are 7: ball x location, ball y location, ball x velocity, ball y velocity, his y location, opponent y location and bias.
